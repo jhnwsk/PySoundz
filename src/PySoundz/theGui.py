@@ -10,7 +10,6 @@ from PyQt4 import QtGui, QtCore
 from theSound import Sound
 
 class PySoundzGUI(QtGui.QWidget):
-
     
     def __init__(self):
         super(PySoundzGUI, self).__init__()
@@ -65,7 +64,13 @@ class PySoundzGUI(QtGui.QWidget):
             event.accept()
         else:
             event.ignore()
-    
+            
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == QtCore.Qt.Key_A:
+            self.generateWave()
+        else:
+            QtGui.QWidget.keyPressEvent(self, event)
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

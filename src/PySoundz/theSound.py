@@ -54,3 +54,4 @@ class Sound:
             self.output.writeframes(chr(rightbyte))    # Write the right half
             self.output.writeframes(chr(leftbyte))    # Write the left half
         self.output.close()
+        
