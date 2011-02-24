@@ -29,18 +29,17 @@ class Sound:
         amplitude = amplitude * 0.5
         return amplitude
     
-    
     def subtle_lfo(self, time):
         time = time - math.floor(time)
         return math.sin(2 * math.pi * time) * 0.01
     
-    def generateWave(self):
+    def generateWave(self, filters, progress):
         
         percenter = 0
         for time in range(1, int(self.duration_in_samples)):    # Do the magic!
             if int((time / self.duration_in_samples) * 100) != percenter:
-                percenter = int((time / self.duration_in_samples) * 100)
-                print percenter
+                percenter = int((time / self.duration_in_samples) * 100) + 1 
+                progress.setValue(percenter)
             osc_1 = self.ramp((1.0 * time * self.fundamental_harmonic) / self.samplerate, time) # Generate stable ramp wave
             osc_2 = self.ramp((2.0 * time * (self.fundamental_harmonic + self.subtle_lfo(time / self.duration_in_samples))) / self.samplerate, time) # Generate unstable ramp wave, an octave up
         

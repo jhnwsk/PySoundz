@@ -11,25 +11,29 @@ from theSound import Sound
 
 class PySoundzGUI(QtGui.QWidget):
 
+    
     def __init__(self):
         super(PySoundzGUI, self).__init__()
+        self.assignFilterValues()
         self.initUI()
 
+    def assignFilterValues(self):
+        self.filters = [('filter1', QtGui.QCheckBox('filter1'),QtGui.QLCDNumber(self)),
+                 ('filter2',QtGui.QCheckBox('filter2'),QtGui.QLCDNumber(self))]
+    
     def initUI(self):
         self.setWindowTitle('PySoundz')
         self.setGeometry(300, 300, 250, 150)
         
-        names = ['filter1',
-                 'filter2']
         grid = QtGui.QGridLayout()
         
         j = 0
-        for name in names:
+        for filter in self.filters:
             # buttons for filter names
-            checkBox = QtGui.QCheckBox(name)
+            checkBox = filter[1]
             grid.addWidget(checkBox, j, 0)
             # sliders for amount
-            lcd = QtGui.QLCDNumber(self)
+            lcd = filter[2]
             grid.addWidget(lcd, j, 1)
             
             slider = QtGui.QSlider(QtCore.Qt.Horizontal)
@@ -40,9 +44,13 @@ class PySoundzGUI(QtGui.QWidget):
 
             j += 2
         
-        button = QtGui.QPushButton('play that shit!')
-        self.connect(button, QtCore.SIGNAL('clicked()'), self.generateWave)
-        grid.addWidget(button, j, 0)
+        self.button = QtGui.QPushButton('play that shit!')
+        self.connect(self.button, QtCore.SIGNAL('clicked()'), self.generateWave)
+        grid.addWidget(self.button, j, 0)
+        
+        self.pbar = QtGui.QProgressBar(self)
+        self.pbar.setGeometry(30, 40, 200, 25)
+        grid.addWidget(self.pbar, j, 1)
         self.setLayout(grid)
 
     def changeValue(self, value):
@@ -56,14 +64,13 @@ class PySoundzGUI(QtGui.QWidget):
             self.label.setPixmap(QtGui.QPixmap('max.png'))
             
     def generateWave(self):
-        sound = Sound()
-        sound.generateWave()
+        self.sound = Sound()
+        self.sound.generateWave(filter(lambda (x,y,z) : y.isChecked(), self.filters), self.pbar)
             
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, 'Message',
             "Are you sure to quit?", QtGui.QMessageBox.Yes | 
             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-
         if reply == QtGui.QMessageBox.Yes:
             event.accept()
         else:
