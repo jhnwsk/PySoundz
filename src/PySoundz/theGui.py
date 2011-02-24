@@ -1,34 +1,13 @@
-#!/usr/bin/python
+'''
+Created on 24-02-2011
+
+@author: johnDonson
+'''
 
 import sys
+
 from PyQt4 import QtGui, QtCore
-
-
-class Icon(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('Icon')
-        self.setWindowIcon(QtGui.QIcon('icons/web.png'))
-
-class MessageBox(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('message box')
-
-
-    def closeEvent(self, event):
-        reply = QtGui.QMessageBox.question(self, 'Message',
-            "Are you sure to quit?", QtGui.QMessageBox.Yes | 
-            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-
-        if reply == QtGui.QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
+from theSound import Sound
 
 class PySoundzGUI(QtGui.QWidget):
 
@@ -42,7 +21,6 @@ class PySoundzGUI(QtGui.QWidget):
         
         names = ['filter1',
                  'filter2']
-        
         grid = QtGui.QGridLayout()
         
         j = 0
@@ -51,15 +29,19 @@ class PySoundzGUI(QtGui.QWidget):
             checkBox = QtGui.QCheckBox(name)
             grid.addWidget(checkBox, j, 0)
             # sliders for amount
+            lcd = QtGui.QLCDNumber(self)
+            grid.addWidget(lcd, j, 1)
+            
             slider = QtGui.QSlider(QtCore.Qt.Horizontal)
             slider.setFocusPolicy(QtCore.Qt.NoFocus)
-            slider.setGeometry(30,40,100,30)
-            self.connect(slider, QtCore.SIGNAL('valueChanged(int)'), self.changeValue)
-            grid.addWidget(slider, j, 1)
+            slider.setGeometry(30, 40, 100, 30)
+            self.connect(slider, QtCore.SIGNAL('valueChanged(int)'), lcd, QtCore.SLOT('display(int)'))
+            grid.addWidget(slider, j+1, 1)
 
-            j += 1
+            j += 2
         
         button = QtGui.QPushButton('play that shit!')
+        self.connect(button, QtCore.SIGNAL('clicked()'), self.generateWave)
         grid.addWidget(button, j, 0)
         self.setLayout(grid)
 
@@ -72,19 +54,26 @@ class PySoundzGUI(QtGui.QWidget):
             self.label.setPixmap(QtGui.QPixmap('med.png'))
         else:
             self.label.setPixmap(QtGui.QPixmap('max.png'))
+            
+    def generateWave(self):
+        sound = Sound()
+        sound.generateWave()
+            
+    def closeEvent(self, event):
+        reply = QtGui.QMessageBox.question(self, 'Message',
+            "Are you sure to quit?", QtGui.QMessageBox.Yes | 
+            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+    
 
 if __name__ == '__main__':
-  
     app = QtGui.QApplication(sys.argv)
     ex = PySoundzGUI()
     ex.show()
     app.exec_()
-else:
-    app = QtGui.QApplication(sys.argv)
-
-    icon = Icon()
-    icon.show()
-    qb = MessageBox()
-    qb.show()
 
 sys.exit(app.exec_())
