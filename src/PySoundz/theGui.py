@@ -53,16 +53,6 @@ class PySoundzGUI(QtGui.QWidget):
         grid.addWidget(self.pbar, j, 1)
         self.setLayout(grid)
 
-    def changeValue(self, value):
-        if value == 0:
-            self.label.setPixmap(QtGui.QPixmap('mute.png'))
-        elif value > 0 and value <= 30:
-            self.label.setPixmap(QtGui.QPixmap('min.png'))
-        elif value > 30 and value < 80:
-            self.label.setPixmap(QtGui.QPixmap('med.png'))
-        else:
-            self.label.setPixmap(QtGui.QPixmap('max.png'))
-            
     def generateWave(self):
         self.sound = Sound()
         self.sound.generateWave(filter(lambda (x,y,z) : y.isChecked(), self.filters), self.pbar)
